@@ -21,7 +21,7 @@ sub<-subset(sub, subset=(Year==2012)) # year=2012
 sub<-subset(sub, subset=(FireType == 'WF')) # get rid of Rx fires
 
 #--------------------------------------------------------
-#  Combine multiple perimeters for same fire
+#  aggregate perimeters for same fire
 #--------------------------------------------------------
 temp <- unionSpatialPolygons(sub, IDs = sub$Fire_Name)
 
@@ -64,10 +64,24 @@ name="R Polygon", description="", col=NULL, visibility=1, lwd=1, border=1,
 kmlname="2012_fire_perimeters", kmldescription="")
 
 
+#--------------------------------------------------------
+#  Create shapefiles for individual fires
+#--------------------------------------------------------
+
+for(i in 1:length(sub$Fire_Name)){
+    fire<-subset(sub, subset=(Fire_Name == sub$Fire_Name[i]))
+    writeOGR(fire, 
+             dsn="/media/Elements/postfire_emissions/fires", 
+             layer=fire$Fire_Name, 
+             driver="ESRI Shapefile")
+}
 
 
+
+#=======================================================
 # testing------------------------------------------------
 temp<-subset(sub, subset=(StartMonth == min(StartMonth)))
+temp<-subset(sub, subset=(Fire_Name == "LONG DRAW"))
 
 temp2 <- unionSpatialPolygons(temp, IDs = temp$Fire_Name)
 
@@ -75,8 +89,7 @@ temp2_df <- as(temp, "data.frame")[!duplicated(temp$Fire_Name),]
 row.names(temp2_df) <- temp2_df$Fire_Name
 temp3 <- SpatialPolygonsDataFrame(temp2, temp2_df)
 
-
-sub.ll84 <- spTransform(temp, CRS("+proj=longlat +ellps=WGS84"))
+plot(temp3)
 
 
 
