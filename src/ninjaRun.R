@@ -20,23 +20,29 @@ for(f in 13:13){
     month <- fire$StartMonth
     day <- fire$StartDay
 
-    #simulate first month
-    for(d in day:31){
+    #simulate first month starting day after fire (01:00 UTC/19:00 MDT)
+    for(d in (day+2):31){ 
         for(cycle in seq(0,18, by=6)){
             for(h in 1:6){             
                 wxFile<-buildFilename(month, d, cycle, h)
-                #print(wxFile)
                 runWN(ogrList[i], wxFile)
             }
         }
     }
 
     #simulate the rest of the months
-    for(i in month+1:12){
-        for(j in 1:31){ 
-            #print(paste0(i,j))
+    if(month<12){
+        for(i in (month+1):12){
+            for(d in 1:31){ 
+                for(cycle in seq(0,18, by=6)){
+                    for(h in 1:6){             
+                        wxFile<-buildFilename(month, d, cycle, h)
+                        runWN(ogrList[i], wxFile)
+                    }
+                }               
+            }
         }
-    }    
+    }
 }
 
 runWN <- function(fire, fcastName){
