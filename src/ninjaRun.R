@@ -1,5 +1,7 @@
 library(maptools)
 library(rgdal)
+library(stringr)
+library(doParallel)
 
 #--------------------------------------------------------
 #  Read in list of shapefiles
@@ -13,46 +15,70 @@ ogrList<-ogrListLayers(dsn)
 #  Iterate over shapefiles
 #--------------------------------------------------------
 
+cl<-makeCluster(4)
+registerDoParallel(cl)
+foreach(i=1:4) %dopar% simulateDust(i)
+stopCluster(cl)
+
+simulateDust<-function(i){
 #for(i in 1:length(ogrList)){
-for(f in 13:13){
+#for(f in 1:1){
+    #load libs here for doParallel
+    library(maptools)
+    library(rgdal)
+    library(stringr)
+
     fire <- readOGR(dsn=dsn, layer=ogrList[i])
 
     month <- fire$StartMonth
     day <- fire$StartDay
 
     #simulate first month starting day after fire (01:00 UTC/19:00 MDT)
-    for(d in (day+2):31){ 
+    for(d in (day+1):31){ 
         for(cycle in seq(0,18, by=6)){
             for(h in 1:6){             
                 wxFile<-buildFilename(month, d, cycle, h)
-                runWN(ogrList[i], wxFile)
+                #check if file exists in archive...                
+                pos<-str_locate(wxFile, ".tar")                
+                tFile<-str_sub(wxFile, 1, pos[2])
+                fileList<-untar(tarfile=tFile, list = TRUE)
+                grb2File<-str_sub(wxFile, pos[2]+2)
+
+                if(grb2File %in% fileList){                   
+                    runWN(ogrList[i], wxFile)
+                }
+
+                
             }
         }
     }
+} #RIGHT NOW SIMULATWIND() IS JUST FOR 1ST MONTH!!!!!! ADD BELOW LOOP LATER....AFTER TESTING.
 
     #simulate the rest of the months
-    if(month<12){
-        for(i in (month+1):12){
-            for(d in 1:31){ 
-                for(cycle in seq(0,18, by=6)){
-                    for(h in 1:6){             
-                        wxFile<-buildFilename(month, d, cycle, h)
-                        runWN(ogrList[i], wxFile)
-                    }
-                }               
-            }
-        }
-    }
-}
+#    if(month<12){
+#        for(i in (month+1):12){
+#            for(d in 1:31){ 
+#                for(cycle in seq(0,18, by=6)){
+#                    for(h in 1:6){             
+#                        wxFile<-buildFilename(month, d, cycle, h)
+#                        runWN(ogrList[i], wxFile)
+#                    }
+#                }               
+#            }
+#        }
+#    }
+#}
 
 runWN <- function(fire, fcastName){
     writeCfg(fire, fcastName)
+    fireNameNoSpaces<-gsub(" ","", fire , fixed=TRUE) 
     system(paste("/home/natalie/src/windninja/build/src/cli/WindNinja_cli", 
-                "windninja.cfg"), intern=FALSE, wait=TRUE)
+                paste0(fireNameNoSpaces,".cfg")), intern=FALSE, wait=TRUE)
 }
 
-writeCfg <- function(fire, fcastName){
-    cfg<-"windninja.cfg"
+writeCfg <- function(fire, fcastName){   
+    fireNameNoSpaces<-gsub(" ","", fire , fixed=TRUE)     
+    cfg<-paste0(fireNameNoSpaces,".cfg")
     cat("num_threads = 1\n", file=cfg)
     cat("vegetation = grass\n", file=cfg, append=TRUE)
     cat("time_zone = auto-detect\n", file=cfg, append=TRUE)
@@ -67,10 +93,8 @@ writeCfg <- function(fire, fcastName){
     cat("compute_friction_velocity = true\n", file=cfg, append=TRUE)
     cat(paste0("fire_perimeter_file = /media/Elements/postfire_emissions/fires/", fire, ".shp\n"), file=cfg, append=TRUE) 
     cat("write_multiband_geotiff_output = true\n", file=cfg, append=TRUE)
-    cat(paste0("geotiff_file = ", fire, ".tif\n"), file=cfg, append=TRUE)
+    cat(paste0("geotiff_file = ", fireNameNoSpaces, ".tif\n"), file=cfg, append=TRUE)
 }
-     
-
 
 buildFilename<-function(month, day, cycle, hour){
     if(nchar(toString(month)) == 1){
