@@ -12,14 +12,19 @@ ogrList<-ogrListLayers(dsn)
 #ogrInfo(dsn=dsn, layer=ogrList[1])
 
 #--------------------------------------------------------
-#  Iterate over shapefiles
+#  Iterate over shapefiles in parallel
 #--------------------------------------------------------
 
 cl<-makeCluster(4)
 registerDoParallel(cl)
-foreach(i=1:4) %dopar% simulateDust(i)
+foreach(i=1:length(ogrList)) %dopar% simulateDust(i)
+#foreach(i=1:4) %dopar% simulateDust(i)
 stopCluster(cl)
 
+
+#--------------------------------------------------------
+#  fxs to do the work
+#--------------------------------------------------------
 simulateDust<-function(i){
 #for(i in 1:length(ogrList)){
 #for(f in 1:1){
@@ -33,47 +38,41 @@ simulateDust<-function(i){
     month <- fire$StartMonth
     day <- fire$StartDay
 
+    #just do fires through 08/12
+    #need to change forecast path for wx files after 08/12
+    if(month > 8){ 
+        next
+    }
+
     #simulate first month starting day after fire (01:00 UTC/19:00 MDT)
     for(d in (day+1):31){ 
         for(cycle in seq(0,18, by=6)){
-            for(h in 1:6){             
-                wxFile<-buildFilename(month, d, cycle, h)
-                #check if file exists in archive               
-                pos<-str_locate(wxFile, ".tar")                
-                tFile<-str_sub(wxFile, 1, pos[2])
-                #only check if the tar file exists
-                pos<-str_locate(wxFile, "/nam_")
-                pathToTar<-str_sub(wxFile, 1, pos[1])                
-                tFileList<-list.files(pathToTar)                
-                if(tFile %in% tFileList){                    
-                    fileList<-untar(tarfile=tFile, list = TRUE)
-                    grb2File<-str_sub(wxFile, pos[2]+2)
-                }
-
-                if(grb2File %in% fileList){                   
+            for(h in 1:6){
+                wxFile<-buildFilename(month, d, cycle, h)             
+                if(checkForWxFile(wxFile)){           
                     runWN(ogrList[i], wxFile)
-                }
-
-                
+                }                
             }
         }
     }
-} #RIGHT NOW SIMULATWIND() IS JUST FOR 1ST MONTH!!!!!! ADD BELOW LOOP LATER....AFTER TESTING.
-
     #simulate the rest of the months
-#    if(month<12){
-#        for(i in (month+1):12){
-#            for(d in 1:31){ 
-#                for(cycle in seq(0,18, by=6)){
-#                    for(h in 1:6){             
-#                        wxFile<-buildFilename(month, d, cycle, h)
-#                        runWN(ogrList[i], wxFile)
-#                    }
-#                }               
-#            }
-#        }
-#    }
-#}
+    #right now, just through 08/12
+    #will need to change path to wx files after 08/12
+    if(month<8){
+        for(i in (month+1):8){
+            for(d in 1:31){ 
+                for(cycle in seq(0,18, by=6)){
+                    for(h in 1:6){             
+                        wxFile<-buildFilename(month, d, cycle, h)
+                        if(checkForWxFile(wxFile)){           
+                            runWN(ogrList[i], wxFile)
+                        } 
+                    }
+                }               
+            }
+        }
+    }
+}
 
 runWN <- function(fire, fcastName){
     writeCfg(fire, fcastName)
@@ -125,6 +124,32 @@ buildFilename<-function(month, day, cycle, hour){
     fcast <- paste0(fcast, '/nam_218_2012', month, day, '_', cycle, '00_', hour, '.grb2')
 
     return(fcast)
+}
+
+checkForWxFile<-function(wxFile){
+    #check if file exists in archive               
+    pos<-str_locate(wxFile, ".tar")                
+    tFile<-str_sub(wxFile, 1, pos[2])
+    #first check if the tar file exists
+    pos<-str_locate(wxFile, "/nam_")
+    pathToTar<-str_sub(wxFile, 1, pos[1])                
+    tFileList<-list.files(pathToTar)
+    pos<-str_locate(tFile, "nam_")
+    tFileBaseName<-str_sub(tFile, pos[1])                
+    if(tFileBaseName %in% tFileList){                    
+        fileList<-untar(tarfile=tFile, list = TRUE)
+        pos<-str_locate(wxFile, ".tar")  
+        grb2File<-str_sub(wxFile, pos[2]+2)
+    }
+    else{
+        return(FALSE)
+    }
+    if(grb2File %in% fileList){                   
+        return(TRUE)
+    }
+    else{
+        return(FALSE)
+    }
 }
 
 #xmin<-fire@bbox[1] 
