@@ -38,11 +38,17 @@ simulateDust<-function(i){
         for(cycle in seq(0,18, by=6)){
             for(h in 1:6){             
                 wxFile<-buildFilename(month, d, cycle, h)
-                #check if file exists in archive...                
+                #check if file exists in archive               
                 pos<-str_locate(wxFile, ".tar")                
                 tFile<-str_sub(wxFile, 1, pos[2])
-                fileList<-untar(tarfile=tFile, list = TRUE)
-                grb2File<-str_sub(wxFile, pos[2]+2)
+                #only check if the tar file exists
+                pos<-str_locate(wxFile, "/nam_")
+                pathToTar<-str_sub(wxFile, 1, pos[1])                
+                tFileList<-list.files(pathToTar)                
+                if(tFile %in% tFileList){                    
+                    fileList<-untar(tarfile=tFile, list = TRUE)
+                    grb2File<-str_sub(wxFile, pos[2]+2)
+                }
 
                 if(grb2File %in% fileList){                   
                     runWN(ogrList[i], wxFile)
@@ -92,7 +98,7 @@ writeCfg <- function(fire, fcastName){
     cat("compute_emissions = true\n", file=cfg, append=TRUE)
     cat("compute_friction_velocity = true\n", file=cfg, append=TRUE)
     cat(paste0("fire_perimeter_file = /media/Elements/postfire_emissions/fires/", fire, ".shp\n"), file=cfg, append=TRUE) 
-    cat("write_multiband_geotiff_output = true\n", file=cfg, append=TRUE)
+    cat("write_multiband_geotiff_output = true\n", file=cfg, append=TRUE)    
     cat(paste0("geotiff_file = ", fireNameNoSpaces, ".tif\n"), file=cfg, append=TRUE)
 }
 
