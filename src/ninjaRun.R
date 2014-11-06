@@ -23,7 +23,7 @@ stopCluster(cl)
 
 
 #--------------------------------------------------------
-#  fxs to do the work
+#  Do the work
 #--------------------------------------------------------
 simulateDust<-function(i){
 #for(i in 1:length(ogrList)){

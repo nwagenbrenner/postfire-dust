@@ -2,6 +2,9 @@ library(maptools)
 library(rgdal)
 library(stringr)
 
+#save the created lists as an R object
+save(list=(ls()[18-137]), file="wxFileLists.RData")
+
 for(i in 1:length(ogrList)){
 
     fire <- readOGR(dsn=dsn, layer=ogrList[i])
@@ -9,15 +12,9 @@ for(i in 1:length(ogrList)){
     month <- fire$StartMonth
     day <- fire$StartDay
 
-    #just do fires through august
-    #need to change forecast path for wx files after august
-    if(month > 8){ 
-        next
-    }
-
     for(d in (day+1):31){ 
         for(cycle in seq(0,18, by=6)){
-            for(h in 1:6){
+            for(h in 1:6){ls
                 wxFile<-buildFilename(month, d, cycle, h)
                 if(checkForWxFile(wxFile)){ 
                     if(d == (day+1)){
@@ -31,12 +28,12 @@ for(i in 1:length(ogrList)){
         }
     }
 
-    if(month > 7){
+    if(month > 11){
         assign(paste0("wxFileList_", i), wxFileList) 
         next
     }
 
-    for(m in (month+1):8){
+    for(m in (month+1):12){
         for(d in 1:31){ 
             for(cycle in seq(0,18, by=6)){
                 for(h in 1:6){             
@@ -70,7 +67,16 @@ buildFilename<-function(month, day, cycle, hour){
         hour <- paste0('0', hour)
     }
 
-    fcast <- paste0('/media/Elements/postfire_emissions/NAM/', month, '12/nam_218_2012', month)
+    #change forecast path for wx files after august
+    if(as.numeric(month) > 8){ 
+        #path<-'/media/My\ Passport_/NAM/'
+        path<-'/mnt/wx/NAM/'        
+    }
+    else{
+        path<-'/media/Elements/postfire_emissions/NAM/'
+    }
+
+    fcast <- paste0(path, month, '12/nam_218_2012', month)
     fcast <- paste0(fcast, day)
     fcast <- paste0(fcast, cycle, '.g2.tar')
     fcast <- paste0(fcast, '/nam_218_2012', month, day, '_', cycle, '00_', hour, '.grb2')
