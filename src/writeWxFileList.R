@@ -18,6 +18,7 @@ ogrList<-ogrListLayers(dsn)
 
 checkForPrecip<-function(nam_file){
     gdallocationinfo<-'/home/natalie/src/gdal_1.9.1/build/bin/./gdallocationinfo -valonly -b' 
+    
     lon <- '-113.33'
     lat <- '45.81'
 
@@ -28,13 +29,10 @@ checkForPrecip<-function(nam_file){
     if(length(precip)==0){ #if can't read the file
         return(3)
     }
-  
-    if(precip != 0){
-            return(2)
+    else if(precip != 0){
+        return(2) 
     }
-    
-    #rain
-    else{
+    else{ # check for rain
         band <-  '11 -wgs84'
         precip <- system(paste(gdallocationinfo, band, nam_file, lon, lat), intern=TRUE, wait=TRUE, ignore.stderr = TRUE)          
         if(precip != 0){
