@@ -1,6 +1,7 @@
 library(maptools)
 library(rgdal)
 library(stringr)
+library(raster)
 
 #--------------------------------------------------------
 #  Read in a fire
@@ -75,6 +76,8 @@ d<-na.omit(dust.master)
 d$pm10_kg<-as.numeric(d$pm10_kg)
 d$pm10_kgperm2<-as.numeric(d$pm10_kgperm2)
 d$area_m2<-as.numeric(d$area_m2)
+
+
 
 #--------------------------------------------------------
 #  plots

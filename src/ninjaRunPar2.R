@@ -23,6 +23,7 @@ stopCluster(cl)
 #--------------------------------------------------------
 #  Do the work
 #--------------------------------------------------------
+i=1
 writeCfg<-function(i){
     if(i == 82){
         #missing info for North Schell fire        
@@ -40,9 +41,9 @@ writeCfg<-function(i){
 
     #path to nam_i.csv files
     #full year    
-    #fcastName <- paste0('/media/Elements/postfire_emissions/wx_lists/nam_', i, '.csv')
+    fcastName <- paste0('/media/Elements/postfire_emissions/wx_lists/nam_', i, '.csv')
     #30 day
-    fcastName <- paste0('/media/Elements/postfire_emissions/wx_lists/30day/nam_', i, '.csv')
+    #fcastName <- paste0('/media/Elements/postfire_emissions/wx_lists/30day/nam_', i, '.csv')
 
     fireNameNoSpaces<-gsub(" ","", fire$Fire_Name, fixed=TRUE)
      
@@ -76,9 +77,26 @@ simulateDust<-function(i){
 }           
 
 cfgs<-system("ls", intern=TRUE)
-for(i in 19:length(cfgs)){
+for(i in 1:length(cfgs)){
+    if(i==2){
+        next
+    }
+    if(i==6){
+        next
+    }
     system(paste("/home/natalie/src/windninja/build/src/cli/WindNinja_cli", cfgs[i]), intern=FALSE, wait=TRUE)
 }
+
+"NINJA_FILL_DEM_NO_DATA=YES"
+
+setwd('/mnt/output/postfire_emissions/output/30day_files2run/')
+system(paste("/home/natalie/src/windninja/build/src/cli/WindNinja_cli", "HOMER.cfg"), intern=FALSE, wait=TRUE)
+
+
+
+
+
+
 
 
 

@@ -3,7 +3,8 @@ library(rgdal)
 library(stringr)
 
 #save the created lists as an R object
-save(list=(ls()[18-137]), file="wxFileLists.RData")
+save(list=(ls()[15-134]), file="/media/Elements/postfire_emissions/wx_lists/wxFileLists.RData")
+
 
 for(i in 1:length(ogrList)){
 
@@ -12,11 +13,14 @@ for(i in 1:length(ogrList)){
     month <- fire$StartMonth
     day <- fire$StartDay
 
-    for(d in (day+1):31){ 
+    for(d in (day+1):31){
+        if(d > 31){
+            break
+        } 
         for(cycle in seq(0,18, by=6)){
-            for(h in 1:6){ls
+            for(h in 1:6){
                 wxFile<-buildFilename(month, d, cycle, h)
-                if(checkForWxFile(wxFile)){ 
+                if(checkForWxFile(wxFile)){
                     if(d == (day+1)){
                         wxFileList<-wxFile
                     }
