@@ -77,8 +77,7 @@ checkForPrecip<-function(nam_file, lon, lat){
 #}
 
 #full year, accounting for rain and snow
-#for(i in 1:length(wxFileList)){
-for(i in 1:1){
+for(i in 1:length(wxFileList)){
     if(i==82){
         next
     } 
@@ -102,6 +101,7 @@ for(i in 1:1){
         print(paste0('j = ', j))
         t1 <- getDatetime(wx[j])
         if(is.na(t1)){ #if can't read the grib file
+            j <- j + 1            
             next        
         }
         precip <- checkForPrecip(paste0('/vsitar/', wx[j]), lon, lat)
