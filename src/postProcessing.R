@@ -11,7 +11,7 @@ dsn<-'/media/Elements/postfire_emissions/fires'
 ogrList<-ogrListLayers(dsn)
 layer<-ogrList[12] #BABOON
 
-fire <- readOGR(dsn=dsn, layer="BABOON")
+fire <- readOGR(dsn=dsn, layer="LYTLE")
 
 #--------------------------------------------------------
 #  Create kml files
@@ -91,13 +91,13 @@ f3<-'batch_3/dust/'
 f4<-'batch_4/dust/'
 f5<-'batch_5/dust/'
 f6<-'batch_6/dust/'
-f7<-'batch_6/dust/'
-f8<-'batch_6/dust/'
-f9<-'batch_6/dust/'
-f10<-'batch_6/dust/'
-f11<-'batch_6/dust/'
+f7<-'batch_7/dust/'
+f8<-'batch_8/dust/'
+f9<-'batch_9/dust/'
+f10<-'batch_10/dust/'
+f11<-'batch_11/dust/'
 
-for(i in 1:1){
+for(i in 1:length(fires)){
     firename<-gsub("_dust.tif","", fires[i], fixed=TRUE)
     firename<-checkSpaces(firename)
     fire <- readOGR(dsn=dsn, layer=firename)
