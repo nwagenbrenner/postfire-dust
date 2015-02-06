@@ -16,22 +16,26 @@ fire <- readOGR(dsn=dsn, layer="LYTLE")
 #--------------------------------------------------------
 #  Create kml files
 #--------------------------------------------------------
+# dust grid
 r1<-raster('/home/natalie/postfire_emissions/BABOON_dust.tif', 1000)
 r1.p<-projectRaster(r1, crs="+proj=longlat +datum=WGS84", method='ngb')
 KML(r1.p, file='baboon_dust.kml')
 
-r.dem<-raster('/home/natalie/postfire_emissions/BABOON.tif')
+# dem grid
+r.dem<-raster('/home/natalie/postfire_emissions/LONG.tif')
 r.dem.p<-projectRaster(r.dem, crs="+proj=longlat +datum=WGS84", method='ngb')
-KML(r.dem.p, file='baboon_dem.kml', overwrite=TRUE)
+KML(r.dem.p, file='longdraw_dem.kml', overwrite=TRUE)
 
+# fire perimeter
 #must be WGS84 CRS
 #only writes first polygon
+fire <- readOGR(dsn=dsn, layer="MILLER HOMESTEAD")
 proj4string(fire)
 fire.ll <- spTransform(fire, CRS("+proj=longlat +ellps=WGS84"))
 
-kml<-kmlPolygon(obj=fire.ll, kmlfile="perimeter.kml",
-name="R Polygon", description="", col=NULL, visibility=1, lwd=1, border=1,
-kmlname="longcanyon_perimeter", kmldescription="")
+kml<-kmlPolygon(obj=fire.ll, kmlfile="millerhomestead_perimeter.kml",
+    name="R Polygon", description="", col=NULL, visibility=1, lwd=1, border=1,
+    kmlname="millerhomestead_perimeter", kmldescription="")
 
 #--------------------------------------------------------
 #  Create raster bricks
@@ -142,8 +146,8 @@ for(i in 1:length(fires)){
     }
     rm(l)
 
-    dust.sum.hourly<-dust.sum*res(dust.sum)[1]^2*60*60 #mg/m2/s to total (for hour) mg per pixel
-    dust.total<-sum(values(dust.sum.hourly), na.rm=TRUE) #total mg for band
+    dust.sum.hourly<-dust.sum*res(dust.sum)[1]^2*60*60 #mg/m2/s to total mg per pixel
+    dust.total<-sum(values(dust.sum.hourly), na.rm=TRUE) #total mg for for fire
     dust.total<-dust.total/1000/1000 # mg to kg (total within burn perimeter)
     dust.kgperm2<-dust.total/fire$Area # kg/m2 (averaged over burned area)
 
@@ -160,6 +164,13 @@ d$area_m2<-as.numeric(d$area_m2)
 
 
 #--------------------------------------------------------
+#  sort final dataframe
+#--------------------------------------------------------
+#oreder by pm10 
+dd<-d[with(d, order(-pm10_kg)), ]
+
+
+#--------------------------------------------------------
 #  plots
 #--------------------------------------------------------
 library(ggplot2)
@@ -173,7 +184,7 @@ p<-ggplot(d, aes(x=name, y=pm10_kg, colour=start_month)) +
     geom_bar(stat="identity", position="dodge") +
     xlab("Fire") + ylab("PM10 (kg)") +
     scale_x_discrete(breaks = ll) + 
-    ggtitle("PM10 Emissions for 30 days Post-fire") +
+    ggtitle("Annual PM10 Emissions 2012") +
     #facet_wrap( ~ fcastType, ncol=1)
     theme(axis.text.x = element_text(angle = 45))
 
@@ -181,15 +192,14 @@ p<-ggplot(d, aes(x=area_m2, y=pm10_kg, colour=start_month)) +
     geom_point(shape=19, size=2.5, alpha = 0.7) +
     xlab("Area (m2)") + ylab("PM10 (kg)") +
     #scale_x_continuous(breaks = ll) + 
-    ggtitle("PM10 Emissions for 30 days Post-fire") +
+    ggtitle("Annual PM10 Emissions 2012") +
     #facet_wrap( ~ fcastType, ncol=1)
     theme(axis.text.x = element_text(angle = 45))
 
 
-
-
-
-
+#--------------------------------------------------------
+#  functions
+#--------------------------------------------------------
 
 checkSpaces<-function(firename){
     if(firename == 'AR'){
