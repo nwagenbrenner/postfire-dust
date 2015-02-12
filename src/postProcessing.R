@@ -162,13 +162,43 @@ d$pm10_kg<-as.numeric(d$pm10_kg)
 d$pm10_kgperm2<-as.numeric(d$pm10_kgperm2)
 d$area_m2<-as.numeric(d$area_m2)
 
-
 #--------------------------------------------------------
 #  sort final dataframe
 #--------------------------------------------------------
-#oreder by pm10 
+#order by pm10 
 dd<-d[with(d, order(-pm10_kg)), ]
 
+r1<-brick('batch_1/dust/LONGDRAW_dust.tif')
+r2<-brick('batch_2/dust/LONGDRAW_dust.tif')
+r3<-brick('batch_3/dust/LONGDRAW_dust.tif')
+r4<-brick('batch_4/dust/LONGDRAW_dust.tif')
+
+r1.spd<-brick('batch_1/LONGDRAW_spd.tif')
+r2.spd<-brick('batch_2/LONGDRAW_spd.tif')
+r3.spd<-brick('batch_3/LONGDRAW_spd.tif')
+r4.spd<-brick('batch_4/LONGDRAW_spd.tif')
+
+#--------------------------------------------------------
+#  locate rasters with max emissions
+#--------------------------------------------------------
+#s<-sum(na.omit(values(r))) #sum values in a single raster
+
+for(i in 1:nlayers(r4)){
+    rsub<-subset(r4,i)
+    if(i==1){
+        s<-as.data.frame(sum(values(rsub), na.rm=TRUE))
+        colnames(s)<-'sum'
+    }
+    else{
+        s<-rbind(s, sum(values(rsub), na.rm=TRUE))
+    }
+}
+
+s.r4<-s
+#ss<-subset(s, subset=(sum==max(sum)))
+ss<-subset(s.r4, subset=(sum>3.0e+03))
+
+s.r3[with(s.r3, order(-sum)),]
 
 #--------------------------------------------------------
 #  plots
