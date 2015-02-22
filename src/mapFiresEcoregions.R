@@ -59,6 +59,23 @@ fires.ll84 <- spTransform(sub, CRS("+proj=longlat +ellps=WGS84"))
 #make the layout
 fires_sp<-list("sp.polygons", fires.ll84, col = 'red', lt=1)
 states_sp<-list("sp.polygons", domain_sp, lwd=0.6, col="grey50")
+
+#add lat/lon text 
+#latlonlines<-gridlines(domain_sp, easts=-125.0:-108.0)
+#latlonlinesLayout<-list("sp.lines", latlonlines,lty=2,col="black")
+#latlontext<-gridat(latlonlines)
+#split for better use of positioning
+#latlontextE<-latlontext[latlontext$pos==1,]
+#latlontextN<-latlontext[latlontext$pos==2,]
+
+#latlontextLayoutE<-list("sp.text",coordinates(latlontextE),
+#        parse(text=as.character(latlontextE$labels)),offset=latlontextE$offset[1],
+#        pos=1,col="black")
+#latlontextLayoutN<-list("sp.text",coordinates(latlontextN),
+#        parse(text=as.character(latlontextN$labels)),offset=latlontextN$offset[1],
+#        pos=1,col="black")
+
+
 sp_layout<-list(states_sp, fires_sp)
 
 spplot(sub.ll84["US_L3NAME"],
@@ -66,13 +83,13 @@ spplot(sub.ll84["US_L3NAME"],
        col.regions=c("grey","yellow","lightblue"),
        lt=0,
        xlim=c(-125.0,-108.0), 
-       ylim=c(30.0,50.0), 
+       ylim=c(31.0,49.5), 
        sp.layout=sp_layout)
 
 #--------------------------------------------------------
 #  Plot with base graphics 
 #--------------------------------------------------------
-#plot(domain_sp, axes = TRUE)
+plot(domain_sp, axes = TRUE)
 
 # add to plot from above
 #spplot(sub.ll84["US_L3NAME"], col = sub.ll84$US_L3NAME, lt=0)
