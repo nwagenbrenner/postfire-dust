@@ -43,5 +43,6 @@ for(i in 3:length(fires)){
     emittingHrsAllFires<-c(emittingHrsAllFires, emittingHrs)
 }
 
+save(emittingHrs, file="emittingHrs.RData")
 
 

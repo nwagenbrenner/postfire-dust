@@ -37,18 +37,19 @@ north<-list("SpatialPolygonsRescale", layout.north.arrow(),
         offset=c(420000, 4715000), scale=4500)
 sp_layout<-list(states_sp,scale,txt1,txt2)
 
+at = c(0.0,10,20,30,40,50,60,70,80,90,100,110,120,130,140)
 
 spplot(r1$LONG_DRAW_220_13_484m_dust,
        #col.regions=colorRampPalette(c('gray80', 'blue', 'red')),
        col.regions=colorRampPalette(c('darkblue', 'gray80','red')),
        #col.regions=heat.colors,
        #col.regions=terrain.colors,
-       #col = r1$LONG_DRAW_220_13_484m_dust, 
        #col.regions=c("grey","yellow","lightblue"),
        #col.regions=c("#999999","#33CC00","#0099FF"),
        #lt=0,
        xlim=c(415000,485000), 
        ylim=c(4660000, 4730000), 
+       at=at,
        sp.layout=sp_layout)
 
 

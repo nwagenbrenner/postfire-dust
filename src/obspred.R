@@ -14,11 +14,15 @@ levels(pm$type)[levels(pm$type)=="mod"] <- "Modeled"
 levels(pm$type)[levels(pm$type)=="obs"] <- "Observed"
 pm$typeOrdered <- factor(pm$type, levels=c("Observed", "Modeled"))
 
+#Create a custom color scale
+myColors <- c("#0099FF","grey50")
+names(myColors) <- levels(pm$location)
 
 
 p<-ggplot(pm, aes(x=datetime, y=pm10, color=location, linetype=typeOrdered, shape=location)) +
     xlab("Date") + ylab("PM10 (ug/m3)") +  
-    geom_point() +
+    geom_point(size=3) +
+    scale_colour_manual(values = myColors) +
     geom_line(guide=FALSE) +
     theme_bw() + 
     theme(axis.text.x = element_text(size = 16), axis.text.y = element_text(size = 16)) +
