@@ -81,7 +81,8 @@ sp_layout<-list(states_sp, fires_sp)
 spplot(sub.ll84["US_L3NAME"],
        col = sub.ll84$US_L3NAME, 
        #col.regions=c("grey","yellow","lightblue"),
-       col.regions=c("#999999","#33CC00","#0099FF"),
+       #col.regions=c("#999999","#33CC00","#0099FF"),
+       col.regions=c("#999999","#999999","#999999"),
        lt=0,
        xlim=c(-125.0,-108.0), 
        ylim=c(31.0,49.5), 
@@ -90,7 +91,7 @@ spplot(sub.ll84["US_L3NAME"],
 #--------------------------------------------------------
 #  Plot with base graphics 
 #--------------------------------------------------------
-plot(domain_sp, axes = TRUE)
+#plot(domain_sp, axes = TRUE)
 
 # add to plot from above
 #spplot(sub.ll84["US_L3NAME"], col = sub.ll84$US_L3NAME, lt=0)
