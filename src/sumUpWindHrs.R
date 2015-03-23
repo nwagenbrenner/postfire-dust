@@ -19,8 +19,8 @@ f11<-'batch_11/'
 
 trim.trailing <- function (x) sub("\\s+$", "", x)
 
-#for(i in 1:length(fires)){
-for(i in 1:2){  
+for(i in 76:length(fires)){
+#for(i in 1:2){  
     wind<-c() # list for this fire 
     min<-c() # list of mins
     max<-c()
@@ -38,7 +38,9 @@ for(i in 1:2){
                 min<-c(min, min(na.omit(values(r))))
                 max<-c(max, max(na.omit(values(r))))  
                 avg<-c(avg, mean(na.omit(values(r))))
-                print(paste0('min, max, avg =', min,", ", max, ", ", avg))              
+                print(paste0('min, max, avg =', min(na.omit(values(r))),
+                             ", ", max(na.omit(values(r))), ", ", 
+                             mean(na.omit(values(r)))))              
             }
         }
     }
