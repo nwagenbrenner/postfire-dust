@@ -2,8 +2,9 @@ library(maptools)
 library(rgdal)
 library(raster)
 
-load('/mnt/output/postfire_emissions/output/annual_output2save/dust.RData')
+#load('/mnt/output/postfire_emissions/output/annual_output2save/dust.RData')
 load('/mnt/output/postfire_emissions/output/annual_output2save/dustHOMERAdded.RData')
+load('/mnt/output/postfire_emissions/output/annual_output2save/emittingHrs.RData')
 
 #--------------------------------------------------------
 #  add L3 ecoregion to df
@@ -29,6 +30,8 @@ er<-as.data.frame(na.omit(ecoregion))
 colnames(er)<-"ecoregion"
 d<-cbind(d,er)
 
+#add in wind speed frequency info
+d<-cbind(d,percentGreaterThan10)
 
 #test
 #emittingHrs<-rnorm(length(d$name),180)
@@ -87,7 +90,7 @@ p<-ggplot(d, aes(x=area_ha, y=pm10_tg, color=factor(ecoregion))) +
     scale_colour_manual(values = c("#999999", "#33CC00", "#0099FF"), guide=FALSE) 
     #theme(axis.text.x = element_text(angle = 45))
 
-p<-ggplot(d, aes(x=emittingHrs, y=pm10_tg, size=area_ha, color=factor(ecoregion))) +
+p<-ggplot(d, aes(x=emittingHrs, y=pm10_tg, size=area_ha, color=percentGreaterThan10)) +
     geom_point(shape=19, alpha = 0.7) +
     xlab("Number of hours with emissions") + ylab("Total PM10 (Tg)") +
     theme_bw() +
@@ -99,11 +102,12 @@ p<-ggplot(d, aes(x=emittingHrs, y=pm10_tg, size=area_ha, color=factor(ecoregion)
     annotate("text", x = 1450, y = 3.0, label = "Rush", size = 5) +
     annotate("text", x = 800, y = 4.0, label = "Holloway", size = 5) +
     scale_colour_manual(values = c("#999999", "#33CC00", "#0099FF"), guide=FALSE) +
-    scale_size_continuous(name  ="Fire Area\n(Ha)") +
+    scale_size_continuous(name  ="Fire Area\n(ha)") +
     # Title appearance
     theme(legend.title = element_text(size=12)) +
     # Label appearance
-    theme(legend.text = element_text(size = 12))
+    theme(legend.text = element_text(size = 12)) + 
+    scale_y_log10()
 
 
 
