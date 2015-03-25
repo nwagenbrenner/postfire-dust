@@ -30,8 +30,6 @@ er<-as.data.frame(na.omit(ecoregion))
 colnames(er)<-"ecoregion"
 d<-cbind(d,er)
 
-#add in wind speed frequency info
-d<-cbind(d,percentGreaterThan10)
 
 #test
 #emittingHrs<-rnorm(length(d$name),180)
@@ -85,29 +83,31 @@ p<-ggplot(d, aes(x=area_ha, y=pm10_tg, color=factor(ecoregion))) +
     #theme(axis.title.x = element_text(vjust=0.1)) +
     #theme(axis.title.y = element_text(vjust=0.1)) +
     annotate("text", x = 195000, y = 4.25, label = "Long Draw", size = 5) +
-    annotate("text", x = 166000, y = 3.0, label = "Rush", size = 5) +
-    annotate("text", x = 97000, y = 4.0, label = "Holloway", size = 5) +
+    annotate("text", x = 166000, y = 3.0, label = "Holloway", size = 5) +
+    annotate("text", x = 97000, y = 4.0, label = "Rush", size = 5) +
     scale_colour_manual(values = c("#999999", "#33CC00", "#0099FF"), guide=FALSE) 
     #theme(axis.text.x = element_text(angle = 45))
 
-p<-ggplot(d, aes(x=emittingHrs, y=pm10_tg, size=area_ha, color=percentGreaterThan10)) +
+
+#add in wind speed frequency info
+d<-cbind(d,percent)
+
+p<-ggplot(d, aes(x=emittingHrs, y=pm10_tg, size=area_ha, color=percent)) +
     geom_point(shape=19, alpha = 0.7) +
     xlab("Number of hours with emissions") + ylab("Total PM10 (Tg)") +
     theme_bw() +
     theme(axis.text.x = element_text(size = 16), axis.text.y = element_text(size = 16)) +
     theme(axis.title = element_text(size = 16)) +
-    #theme(axis.title.x = element_text(vjust=-0.5)) +
-    #theme(axis.title.y = element_text(vjust=-0.05)) +
     annotate("text", x = 1050, y = 4.28, label = "Long Draw", size = 5) +
-    annotate("text", x = 1450, y = 3.0, label = "Rush", size = 5) +
-    annotate("text", x = 800, y = 4.0, label = "Holloway", size = 5) +
-    scale_colour_manual(values = c("#999999", "#33CC00", "#0099FF"), guide=FALSE) +
-    scale_size_continuous(name  ="Fire Area\n(ha)") +
-    # Title appearance
+    annotate("text", x = 1550, y = 3.0, label = "Holloway", size = 5) +
+    annotate("text", x = 650, y = 4.0, label = "Rush", size = 5) +
+    scale_color_gradient2(low="red",mid="grey70",high="blue",name="% > 6 m/s") +
+    #scale_colour_gradientn(colours = ramp(100),breaks = c(min_val:max_val),name="% > 6 m/s")+
+    scale_size_continuous(breaks=c(1000,50000,100000,200000), 
+                          labels=c("1000","50000","100000","200000"),
+                          name  ="Fire Area\n(ha)") +
     theme(legend.title = element_text(size=12)) +
-    # Label appearance
-    theme(legend.text = element_text(size = 12)) + 
-    scale_y_log10()
+    theme(legend.text = element_text(size = 12))
 
 
 
