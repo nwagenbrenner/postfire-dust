@@ -98,9 +98,9 @@ p<-ggplot(d, aes(x=emittingHrs, y=pm10_tg, size=area_ha, color=percent)) +
     theme_bw() +
     theme(axis.text.x = element_text(size = 16), axis.text.y = element_text(size = 16)) +
     theme(axis.title = element_text(size = 16)) +
-    annotate("text", x = 1050, y = 4.28, label = "Long Draw", size = 5) +
+    annotate("text", x = 1850, y = 4.28, label = "Long Draw", size = 5) +
     annotate("text", x = 1550, y = 3.0, label = "Holloway", size = 5) +
-    annotate("text", x = 650, y = 4.0, label = "Rush", size = 5) +
+    annotate("text", x = 1450, y = 4.0, label = "Rush", size = 5) +
     scale_color_gradient2(low="red",mid="grey70",high="blue",name="% > 6 m/s") +
     #scale_colour_gradientn(colours = ramp(100),breaks = c(min_val:max_val),name="% > 6 m/s")+
     scale_size_continuous(breaks=c(1000,50000,100000,200000), 
