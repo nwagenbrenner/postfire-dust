@@ -82,9 +82,9 @@ p<-ggplot(d, aes(x=area_ha, y=pm10_tg, color=factor(ecoregion))) +
     theme(axis.title = element_text(size = 16)) +
     #theme(axis.title.x = element_text(vjust=0.1)) +
     #theme(axis.title.y = element_text(vjust=0.1)) +
-    annotate("text", x = 195000, y = 4.25, label = "Long Draw", size = 5) +
-    annotate("text", x = 166000, y = 3.0, label = "Holloway", size = 5) +
-    annotate("text", x = 97000, y = 4.0, label = "Rush", size = 5) +
+    annotate("text", x = 1850, y = 4.28, label = "Long Draw", size = 5) +
+    annotate("text", x = 1550, y = 3.0, label = "Holloway", size = 5) +
+    annotate("text", x = 1450, y = 4.0, label = "Rush", size = 5) +
     scale_colour_manual(values = c("#999999", "#33CC00", "#0099FF"), guide=FALSE) 
     #theme(axis.text.x = element_text(angle = 45))
 
