@@ -88,6 +88,46 @@ p<-ggplot(d, aes(x=area_ha, y=pm10_tg, color=factor(ecoregion))) +
     scale_colour_manual(values = c("#999999", "#33CC00", "#0099FF"), guide=FALSE) 
     #theme(axis.text.x = element_text(angle = 45))
 
+#log-log plot 
+season<-c()
+for(i in 1:length(d$name)){
+    if(d$start_month[i] %in% c(12, 1, 2)){
+        season<-c(season,"DJF")
+    }
+    else if(d$start_month[i] %in% c(3,4,5)){
+        season<-c(season,"MAM")
+    }
+    else if(d$start_month[i] %in% c(6,7,8)){
+        season<-c(season,"JJA")
+    }
+    else{
+        season<-c(season,"SON")
+    }
+}
+
+d<-cbind(d,season)
+
+
+p<-ggplot(d, aes(x=area_ha, y=pm10_tg, size=emittingHrs, color=as.factor(season))) +
+    geom_point(shape=19, alpha = 0.7) +
+    scale_size_continuous(breaks=c(1000,2000,3000), 
+                          labels=c("1000","2000","3000"),
+                          name  ="Emitting hours") +
+    xlab("Fire Size (ha)") + ylab("Total PM10 (Tg)") +
+    theme_bw() +
+    theme(axis.text.x = element_text(size = 16), axis.text.y = element_text(size = 16)) +
+    theme(axis.title = element_text(size = 16)) +
+    #scale_size_continuous(breaks=c(1000,50000,100000,200000), 
+    #                      labels=c("1000","50000","100000","200000"),
+    #                      name  ="Fire Area\n(ha)") +
+    theme(legend.title = element_text(size=12)) +
+    theme(legend.text = element_text(size = 12)) +
+    scale_colour_manual(values = c("darkblue", "orange", "darkgreen", "grey30"),
+                        name  ="Start month") +
+    scale_y_log10(limits=c(1e-03, 1e+01),breaks=c(0.001,0.01,0.1,1.0,10),labels=c("0.001","0.01","0.1","1.0","10")) +
+    scale_x_log10(limits=c(100,1e+6), breaks=c(100,1000,10000,100000,1000000),
+                    labels=c("100","1000", "1000","100000","1000000")) 
+    #stat_smooth(method="lm", se=FALSE,color="black")
 
 #add in wind speed frequency info
 d<-cbind(d,percent)
