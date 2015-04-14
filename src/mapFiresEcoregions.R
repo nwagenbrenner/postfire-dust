@@ -1,5 +1,6 @@
 library(maptools)
 library(rgdal)
+library(maps)
 
 #--------------------------------------------------------
 #  Read in ecoregions shapefile
