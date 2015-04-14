@@ -54,12 +54,17 @@ sub <- SpatialPolygonsDataFrame(temp, sub_df)
 proj4string(sub)
 fires.ll84 <- spTransform(sub, CRS("+proj=longlat +ellps=WGS84"))
 
+longdraw<-subset(fires.ll84, subset=(Fire_Name=='LONG DRAW')) # year=2012
+fires.ll84<-subset(fires.ll84, subset=(Fire_Name!='LONG DRAW')) # year=2012
+
+
 #--------------------------------------------------------
 #  Plot with spplot()
 #--------------------------------------------------------
 #make the layout
 fires_sp<-list("sp.polygons", fires.ll84, col = 'red', lt=1)
 states_sp<-list("sp.polygons", domain_sp, lwd=0.6, col="grey50")
+longdraw_sp<-list("sp.polygons", longdraw, col = 'blue', lt=1)
 
 #add lat/lon text 
 #latlonlines<-gridlines(domain_sp, easts=-125.0:-108.0)
@@ -77,7 +82,7 @@ states_sp<-list("sp.polygons", domain_sp, lwd=0.6, col="grey50")
 #        pos=1,col="black")
 
 
-sp_layout<-list(states_sp, fires_sp)
+sp_layout<-list(states_sp, fires_sp, longdraw_sp)
 
 spplot(sub.ll84["US_L3NAME"],
        col = sub.ll84$US_L3NAME, 
