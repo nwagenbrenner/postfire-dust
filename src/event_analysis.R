@@ -48,3 +48,24 @@ starttime<-"2012-Aug-03 20:00:00 PDT"
 t<-as.POSIXct(strptime(starttime, "%Y-%b-%d %H:%M:%S"))
 nhours<-551
 tt<-t + (nhours*60*60) #add nhours to start time of simulation
+
+
+#--------------------------------------------------------
+#  time series plot
+#--------------------------------------------------------
+#read in data from dust_summary.csv (or .RData)
+kr<-subset(summary, subset=(Firename=="KINYONROAD"))
+kr[,"Datetime"] <- as.character(kr[,"Datetime"])
+kr[,"Datetime"] <- as.POSIXct(strptime(kr[,"Datetime"], '%Y-%b-%d %H:%M:%S'))
+#kr<-subset(kr, subset=(as.POSIXlt(Datetime)$mon+1==10))
+
+kr<-subset(kr, subset=(Datetime > "2012-10-02" & Datetime < "2012-10-05"))
+
+p<-ggplot(kr, aes(x=Datetime, y=Max)) +
+    geom_point(shape=19, size=1.5, alpha = 1) +
+    geom_line() +
+    xlab("Time") + ylab("PM10 Hourly Emissions") +
+    theme_bw() +
+    theme(axis.text = element_text(size = 16)) +
+    ggtitle("KINYON ROAD")
+
